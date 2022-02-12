@@ -1,14 +1,4 @@
 " Autoload functions for dcoverage
-" Setup colors
-" TODO: Make these colors accessible to user config
-let s:dcoverage_covered_stm_color = "#008700"
-let s:dcoverage_uncovered_stm_color = "#870000"
-let s:dcoverage_part_covered_branch_color = "#878700"
-let s:dcoverage_well_covered_report_color = "green"
-let s:dcoverage_moderate_covered_report_color = "dark orange"
-let s:dcoverage_poorly_covered_report_color = "red"
-
-
 " Gradle Api (adapted from hdiniz/vim-gradle) {{{1
 " Setup {{{2
 let s:script_path = tolower(resolve(expand('<sfile>:p:h')))
@@ -301,6 +291,7 @@ function! s:project.open_coverage_win(clean) dict
         \ 'size': '20',
         \ 'relative_to': self.build_buffer,
         \ 'alternative_name': 'Coverage Results',
+        \ 'modifiers': 'signcolumn=no colorcolumn=""'
         \ }
 
   let self.coverage_buffer = dcoverage#create_win_for(l:opts)
@@ -574,8 +565,25 @@ function! s:project.parse_clover() dict
 endfunction
 " }}}
 " Write coverage summary {{{
-function! s:project.place_signs() dict
-  echom "Loop over files"
+" Code signs {{{2
+hi! def dcoverageCoveredStmtColor        ctermbg=#008700
+hi! def dcoverageUncoveredStmtColor      ctermbg=#870000
+hi! def dcoveragePartCoveredBranchColor  ctermbg=#878700
+
+function! s:project.define_signs() dict
+  if self.signs_visible
+    call sign_define(DcoverageCoveredStmt,       {'linehl': dcoverageCoveredStmtColor})
+    call sign_define(DcoverageUncoveredStmt,     {'linehl': dcoverageUncoveredStmtColor})
+    call sign_define(DcoveragePartCoveredBranch, {'linehl': dcoveragePartCoveredBranchColor})
+  else
+    call sign_define(DcoverageCoveredStmt,       {'linehl': ""})
+    call sign_define(DcoverageUncoveredStmt,     {'linehl': ""})
+    call sign_define(DcoveragePartCoveredBranch, {'linehl': ""})
+  endif
+endfunction
+
+function! s:project.code_place_signs() dict
+  echom "loop over files"
   echom "Set covered statement signs"
   echom "Set uncovered statement signs"
   echom "Set covered branches signs"
@@ -583,19 +591,28 @@ function! s:project.place_signs() dict
   let self.signs_visible = v:true
 endfunction
 
-function! s:project.remove_signs() dict
+function! s:project.code_show_signs() dict
+  let self.signs_visible = v:true
+endfunction
+
+function! s:project.code_hide_signs() dict
   echom "Loop over files"
   echom "remove all signs"
   let self.signs_visible = v:false
 endfunction
 
-function! s:project.toggle_signs() dict
+function! s:project.code_toggle_signs() dict
+  let self.signs_visible = v:true
+endfunction
+
+function! s:project.code_toggle_signs() dict
   if self.signs_visible
-    call self.remove_signs()
+    call self.code_hide_signs()
   else
-    call self.place_signs()
+    call self.code_show_signs()
   endif
 endfunction
+" 2}}}
 
 function! s:project.calc_columnwidth(valuekey, initval=0) dict
   " let l:ignore_keys = [ 'covered_stmt', 'covered_branch', 'covered_total',
