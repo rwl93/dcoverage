@@ -702,7 +702,7 @@ endfunction
 
 function! s:project.write_coverage_report(fname) dict
   echom "Saving coverage summary to " . self.root_folder . "/" . a:fname
-  call writefile(self.coverage_report_lines, a:fname)
+  call writefile(self.coverage_report_lines, self.root_folder . "/" . a:fname)
 endfunction
 " }}}
 " Generate and show helpers {{{
