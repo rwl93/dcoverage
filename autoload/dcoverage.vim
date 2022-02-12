@@ -9,10 +9,6 @@ let s:dcoverage_moderate_covered_report_color = "dark orange"
 let s:dcoverage_poorly_covered_report_color = "red"
 
 
-" TODO: Refactor public/private api
-" TODO: Complete gen clover report function
-" TODO: Open/Close clover report summary
-" TODO: Create signs for each file following the clover report
 " Gradle Api (adapted from hdiniz/vim-gradle) {{{1
 " Setup {{{2
 let s:script_path = tolower(resolve(expand('<sfile>:p:h')))
