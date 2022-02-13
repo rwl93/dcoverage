@@ -1,0 +1,49 @@
++---------------------------------------+-----------------+------------+-----------+----------+---------+
+|             Class Name                | Total Coverage% | Cvrd Stmts | Ttl Stmts | Cvrd Brs | Ttl Brs |
++---------------------------------------+-----------------+------------+-----------+----------+---------+
+|      projecttst.SampleClass0000       |        0        |     44     |    57     |    18    |   32    |
+|      projecttst.SampleClass0000       |       10        |     44     |    57     |    18    |   32    |
+|      projecttst.SampleClass0000       |       15        |     44     |    57     |    18    |   32    |
+|      projecttst.SampleClass0000       |       49        |     44     |    57     |    18    |   32    |
+|      projecttst.SampleClass0000       |       50        |     44     |    57     |    18    |   32    |
+|      projecttst.SampleClass0000       |       70        |     44     |    57     |    18    |   32    |
+|       projecttst.SampleClass001       |       86        |     62     |    72     |    2     |    2    |
+|         projecttst.SampleClass        |       97        |     96     |    100    |    24    |   24    |
+|      projecttst.SampleClassxxxx       |       97        |     29     |    30     |    4     |    4    |
+|       projecttst.SampleClassxxx       |       98        |     84     |    84     |    41    |   44    |
+|        projecttst.SampleClassxx       |       100       |     11     |    11     |    2     |    2    |
+|     projecttst.SampleClassxxxxxxxx    |       100       |     80     |    80     |    16    |   16    |
+|    projecttst.SampleClassxxxxxxxxxx   |       100       |     6      |     6     |    4     |    4    |
+| projecttst.SampleClassxxxxxxxxxxxxxxx |       100       |     24     |    24     |    0     |    0    |
+|         projecttst.SampleClass        |       100       |     17     |    17     |    6     |    6    |
+|         projecttst.SampleClass        |       100       |     29     |    29     |    10    |   10    |
+|       projecttst.SampleClassXX        |       100       |     0      |     0     |    0     |    0    |
+|       projecttst.SampleClassXXX       |       100       |     44     |    44     |    0     |    0    |
+|       projecttst.SampleClassXX        |       100       |     39     |    39     |    0     |    0    |
+|   projecttst.SampleClassXXXXXXXXXX    |       100       |     5      |     5     |    2     |    2    |
+|         projecttst.SampleClass        |       100       |     20     |    20     |    8     |    8    |
+|            projecttst.SampleClass     |       100       |     0      |     0     |    0     |    0    |
+|            projecttst.SampleClass     |       100       |     26     |    26     |    8     |    8    |
+|  projecttst.SampleClassXXXXXXXXXXXXX  |       100       |     0      |     0     |    0     |    0    |
+|    projecttst.SampleClassXXXXXXXX     |       100       |     0      |     0     |    0     |    0    |
+|   projecttst.SampleClassXXXXXXXXXXX   |       100       |     6      |     6     |    2     |    2    |
+|       projecttst.SampleClassXX        |       100       |     16     |    16     |    4     |    4    |
+|       projecttst.SampleClassXX        |       100       |     10     |    10     |    2     |    2    |
+|         projecttst.SampleClass        |       100       |     12     |    12     |    4     |    4    |
+|          projecttst.SampleClas        |       100       |     37     |    37     |    0     |    0    |
+|       projecttst.SampleClassXX        |       100       |     60     |    60     |    16    |   16    |
+|     projecttst.SampleClassXXXXXX      |       100       |    169     |    169    |    52    |   52    |
+|    projecttst.SampleClassXXXXXXXX     |       100       |     64     |    64     |    4     |    4    |
+|           projecttst.SampleClass      |       100       |     0      |     0     |    0     |    0    |
+|       projecttst.SampleClassXX        |       100       |     11     |    11     |    4     |    4    |
+|    projecttst.SampleClassXXXXXXXX     |       100       |     12     |    12     |    8     |    8    |
+|     projecttst.SampleClassXXXXXX      |       100       |     19     |    19     |    0     |    0    |
+|     projecttst.SampleClassXXXXXX      |       100       |     65     |    65     |    2     |    2    |
+|      projecttst.SampleClassXXXX       |       100       |     0      |     0     |    0     |    0    |
+| projecttst.SampleClassXXXXXXXXXXXXXX  |       100       |     4      |     4     |    0     |    0    |
+|  projecttst.SampleClassXXXXXXXXXXXX   |       100       |     22     |    22     |    0     |    0    |
++---------------------------------------+-----------------+------------+-----------+----------+---------+
+|             Totals                    |       97        |    2246    |   2302    |   486    |   520   |
++---------------------------------------+-----------------+------------+-----------+----------+---------+
+
+Text finished at Sat Feb 12 12:45:04 AM

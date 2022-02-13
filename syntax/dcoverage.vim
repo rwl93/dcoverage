@@ -9,6 +9,7 @@ endif
 
 let b:current_syntax = "dcoverage"
 
+syntax region dcoverageComment oneline start="\"" end="$"
 syntax match dcoverageHeaderLine "^|\s*Class Name.*$"
 " syntax match dcoverageTotalsLine "^|\s*Totals.*$"
 syntax match dcoverageSepLine "^+.*$"
@@ -17,9 +18,10 @@ syntax match dcoverageWellCoveredReport "^|[^|]*|\s*100.*$"
 syntax match dcoverageModerateCoveredReport "^|[^|]*|\s*[56789][0-9]\s.*$"
 syntax match dcoveragePoorlyCoveredReport "^|[^|]*|\s*\([0-9]\s\|[1-4][0-9]\s\).*$"
 
+hi! def link dcoverageComment Comment
 hi! def link dcoverageHeaderLine Title
 " hi! def link dcoverageTotalsLine
-hi! def link dcoverageSepLine helpSectionDelim
+hi! def link dcoverageSepLine Character
 
 " Define sign colors
 hi! def link dcoverageWellCoveredReport       Search

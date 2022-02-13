@@ -36,4 +36,3 @@ hi! def link GradleTaskResultUpToDate Comment
 hi! def link GradleTaskResultNoSource Comment
 hi! def link GradleBuildResultSuccessful Operator
 hi! def link GradleBuildResultFailed Special
-

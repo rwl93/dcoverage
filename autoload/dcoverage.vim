@@ -524,7 +524,7 @@ function! s:project.parse_clover() dict
     endif
     " start loop to gather file data
     if !empty(matchstr(l:currline, "<file"))
-      let l:currfilecov = copy(s:coverage_template)
+      let l:currfilecov = deepcopy(s:coverage_template)
       let l:currfilecov.package = l:currpackage
       call l:currfilecov.extract_file_info(l:currline)
       let l:metrics_set = v:false
@@ -564,56 +564,116 @@ function! s:project.parse_clover() dict
   endif
 endfunction
 " }}}
-" Write coverage summary {{{
-" Code signs {{{2
-hi! def dcoverageCoveredStmtColor        ctermbg=#008700
-hi! def dcoverageUncoveredStmtColor      ctermbg=#870000
-hi! def dcoveragePartCoveredBranchColor  ctermbg=#878700
+" Code signs {{{
+hi! def dcoverageCoveredStmtColor       ctermbg=White ctermbg=Green  guifg=#FFFFFF guibg=#008700
+hi! def dcoverageUncoveredStmtColor     ctermbg=White ctermbg=Red    guifg=#FFFFFF guibg=#870000
+hi! def dcoveragePartCoveredBranchColor ctermbg=White ctermbg=Yellow guifg=#FFFFFF guibg=#878700
 
 function! s:project.define_signs() dict
   if self.signs_visible
-    call sign_define(DcoverageCoveredStmt,       {'linehl': dcoverageCoveredStmtColor})
-    call sign_define(DcoverageUncoveredStmt,     {'linehl': dcoverageUncoveredStmtColor})
-    call sign_define(DcoveragePartCoveredBranch, {'linehl': dcoveragePartCoveredBranchColor})
+    call sign_define([
+          \ { "name":   "DcoverageCoveredStmt",
+            \ "linehl": "dcoverageCoveredStmtColor",
+            \ "texthl": "dcoverageCoveredStmtColor",
+            \ "text":   "WC",
+            \ },
+          \ { "name":   "DcoverageUncoveredStmt",
+            \ "linehl": "dcoverageUncoveredStmtColor",
+            \ "texthl": "dcoverageUncoveredStmtColor",
+            \ "text":   "UC",
+            \ },
+          \ { "name":   "DcoveragePartCoveredBranch",
+            \ "linehl": "dcoveragePartCoveredBranchColor",
+            \ "texthl": "dcoveragePartCoveredBranchColor",
+            \ "text":   "PC",
+            \ },
+          \])
   else
-    call sign_define(DcoverageCoveredStmt,       {'linehl': ""})
-    call sign_define(DcoverageUncoveredStmt,     {'linehl': ""})
-    call sign_define(DcoveragePartCoveredBranch, {'linehl': ""})
+    call sign_define([
+          \ { "name":   "DcoverageCoveredStmt",
+            \ "linehl": "",
+            \ "texthl": "",
+            \ "text":   "",
+            \ },
+          \ { "name":   "DcoverageUncoveredStmt",
+            \ "linehl": "",
+            \ "texthl": "",
+            \ "text":   "",
+            \ },
+          \ { "name":   "DcoveragePartCoveredBranch",
+            \ "linehl": "",
+            \ "texthl": "",
+            \ "text":   "",
+            \ },
+          \])
   endif
 endfunction
 
-function! s:project.code_place_signs() dict
-  echom "loop over files"
-  echom "Set covered statement signs"
-  echom "Set uncovered statement signs"
-  echom "Set covered branches signs"
-  echom "Set uncovered branches signs"
-  let self.signs_visible = v:true
+function! s:place_signlist(lns, sign, filepath, group) abort
+  let l:slist = map(copy(a:lns),
+        \{_, val -> {
+          \ 'id': 0,
+          \ 'name': a:sign,
+          \ 'buffer': a:filepath,
+          \ 'group': a:group,
+          \ 'lnum': val,
+          \}
+        \})
+  call sign_placelist(l:slist)
 endfunction
 
-function! s:project.code_show_signs() dict
-  let self.signs_visible = v:true
+let s:sign_group_name = 'DcoverageSignGroup'
+
+function! s:project.placeSigns() dict
+  if exists("self.coverage_data")
+    for [l:key, l:value] in items(self.coverage_data)
+      " Remove the values not associated with a file
+      if type(l:value) != type({}) | continue | endif
+      let l:covstmtlns = l:value['coveredstmt_lns']
+      let l:uncovstmtlns = l:value['uncoveredstmt_lns']
+      let l:covcondlns = l:value['coveredcond_lns']
+      let l:parcovcondlns = l:value['partialcoveredcond_lns']
+      let l:uncovcondlns = l:value['uncoveredcond_lns']
+      let l:fpath = l:value['path']
+      if bufnr(l:fpath) != -1
+        call s:place_signlist(l:covstmtlns, 'DcoverageCoveredStmt',
+              \ l:fpath, s:sign_group_name)
+        call s:place_signlist(l:uncovstmtlns, 'DcoverageUncoveredStmt',
+              \ l:fpath, s:sign_group_name)
+        call s:place_signlist(l:covcondlns, 'DcoverageCoveredStmt',
+              \ l:fpath, s:sign_group_name)
+        call s:place_signlist(l:parcovcondlns, 'DcoveragePartCoveredBranch',
+              \ l:fpath, s:sign_group_name)
+        call s:place_signlist(l:uncovcondlns, 'DcoverageUncoveredStmt',
+              \ l:fpath, s:sign_group_name)
+      endif
+    endfor
+  endif
 endfunction
 
-function! s:project.code_hide_signs() dict
-  echom "Loop over files"
-  echom "remove all signs"
+function! dcoverage#remove_signs() abort
+  call sign_unplace(s:sign_group_name)
+endfunction
+
+function! s:project.show_signs() dict
+  let self.signs_visible = v:true
+  call self.define_signs()
+endfunction
+
+function! s:project.hide_signs() dict
   let self.signs_visible = v:false
+  call self.define_signs()
 endfunction
 
-function! s:project.code_toggle_signs() dict
-  let self.signs_visible = v:true
-endfunction
-
-function! s:project.code_toggle_signs() dict
+function! s:project.toggle_signs() dict
   if self.signs_visible
-    call self.code_hide_signs()
+    call self.hide_signs()
   else
-    call self.code_show_signs()
+    call self.show_signs()
   endif
 endfunction
-" 2}}}
-
+" }}}
+" Write coverage summary {{{
 function! s:project.calc_columnwidth(valuekey, initval=0) dict
   " let l:ignore_keys = [ 'covered_stmt', 'covered_branch', 'covered_total',
   "       \ 'covered_percent', 'all_stmt', 'all_branch', 'all_total']
@@ -726,6 +786,9 @@ function! s:PostfunGenAndShow() dict
   call self.open_coverage_win(1)
   " Print coverage report to buffer
   call appendbufline(self.coverage_buffer, 0, self.coverage_report_lines)
+  call dcoverage#remove_signs()
+  call self.show_signs()
+  call self.placeSigns()
 endfunction
 
 function! s:PostfunGenAndSave(fname) dict
@@ -736,6 +799,9 @@ function! s:PostfunGenAndSave(fname) dict
   call self.open_coverage_win(1)
   " Print coverage report to buffer
   call appendbufline(self.coverage_buffer, 0, self.coverage_report_lines)
+  call dcoverage#remove_signs()
+  call self.show_signs()
+  call self.placeSigns()
 endfunction
 
 function! s:generate_and_show_dcoverage() abort
@@ -759,25 +825,27 @@ function! dcoverage#define_buffer_cmds()
   command! -buffer DcovGenCloverReport call s:gen_clover_report()
   command! -buffer DcovToggleOutputWin call dcoverage#current_proj().toggle_output_win()
   command! -buffer DcovToggleCoverageWin call dcoverage#current_proj().toggle_coverage_win()
+  command! -buffer DcovToggleSigns call dcoverage#current_proj().toggle_signs()
 endfunction
 
-nnoremap <unique> <script> <Plug>DcovGenAndShowCoverage  :call <SID>generate_and_show_dcoverage()<CR>
-nnoremap <unique> <script> <Plug>DcovGenAndSaveCoverage  :call <SID>generate_and_save_dcoverage()<CR>
-nnoremap <unique> <script> <Plug>DcovGenCloverReport  :call <SID>gen_clover_report()<CR>
-nnoremap <unique> <script> <Plug>DcovToggleOutputWin  :call dcoverage#current_proj().toggle_output_win()<CR>
-nnoremap <unique> <script> <Plug>DcovToggleCoverageWin  :call dcoverage#current_proj().toggle_coverage_win()<CR>
+nnoremap <unique> <script> <silent> <Plug>DcovGenAndShowCoverage  :call <SID>generate_and_show_dcoverage()<CR>
+nnoremap <unique> <script> <silent> <Plug>DcovGenAndSaveCoverage  :call <SID>generate_and_save_dcoverage()<CR>
+nnoremap <unique> <script> <silent> <Plug>DcovGenCloverReport     :call <SID>gen_clover_report()<CR>
+nnoremap <unique> <script> <silent> <Plug>DcovToggleOutputWin     :call dcoverage#current_proj().toggle_output_win()<CR>
+nnoremap <unique> <script> <silent> <Plug>DcovToggleCoverageWin   :call dcoverage#current_proj().toggle_coverage_win()<CR>
+nnoremap <unique> <script> <silent> <Plug>DcovToggleSigns         :call dcoverage#current_proj().toggle_signs()<CR>
 
 if !hasmapto('<Plug>DcovGenAndSaveCoverage')
-  nmap <unique> <Leader>ds  <Plug>DcovGenAndSaveCoverage
-endif
-if !hasmapto('<Plug>DcovGenCloverReport')
-  nmap <unique> <Leader>dg  <Plug>DcovGenCloverReport
+  nmap <unique> <Leader>dg  <Plug>DcovGenAndSaveCoverage
 endif
 if !hasmapto('<Plug>DcovToggleOutputWin')
   nmap <unique> <Leader>do  <Plug>DcovToggleOutputWin
 endif
 if !hasmapto('<Plug>DcovToggleCoverageWin')
   nmap <unique> <Leader>dc  <Plug>DcovToggleCoverageWin
+endif
+if !hasmapto('<Plug>DcovToggleSigns')
+  nmap <unique> <Leader>ds  <Plug>DcovToggleSigns
 endif
 " }}}
 " vim: foldmethod=marker : foldlevel=0 :

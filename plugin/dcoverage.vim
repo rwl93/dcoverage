@@ -5,7 +5,6 @@ if exists("b:loaded_dcoverage")
   finish
 endif
 let g:loaded_dcoverage = 1
-echo "dcoverage loading..."
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -16,20 +15,28 @@ function! s:restore_cpo()
 endfunction
 
 function! s:buffer_enter()
-    if get(g:, "vim_dcoverage_autoload", 1) == 0
-        return
-    endif
+  if get(g:, "vim_dcoverage_autoload", 1) == 0
+    return
+  endif
 
-    if get(b:, "dcov_gradle_project_root", '') != ''
-        return
-    endif
+  if get(b:, "dcov_gradle_project_root", '') != ''
+    return
+  endif
 
-    let l:path = expand('%:p:h')
-    if l:path =~ "^fugitive:"
-        return
-    endif
+  if stridx(&filetype, 'netrw') != -1
+    return
+  endif
 
-    call s:load_from(l:path)
+  if stridx(&filetype, 'Telescope') != -1
+    return
+  endif
+
+  let l:path = expand('%:p:h')
+  if l:path =~ "^fugitive:"
+    return
+  endif
+
+  call s:load_from(l:path)
 endfunction
 
 function! s:load_from(path)
@@ -37,6 +44,7 @@ function! s:load_from(path)
   let b:dcov_gradle_project_root = s:find_project_root(a:path, l:build_file_name)
   if b:dcov_gradle_project_root != ''
     call dcoverage#load_project(b:dcov_gradle_project_root)
+    call dcoverage#current_proj().placeSigns()
     return 1
   endif
   return 0
@@ -60,6 +68,7 @@ endfunction
 augroup dcoverage
   autocmd!
   autocmd BufEnter * call s:buffer_enter()
+  autocmd BufDelete,ExitPre,FileWritePre * call dcoverage#remove_signs()
 augroup END
 
 call s:restore_cpo()
