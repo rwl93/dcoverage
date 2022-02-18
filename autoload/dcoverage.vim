@@ -49,7 +49,8 @@ let s:project = {
     \ 'gradle_log_file': '',
     \ 'coverage_file': '',
     \ 'last_compile_args': [],
-    \ 'post_compilation_function' : function("s:NopFunc")
+    \ 'post_compilation_function' : function("s:NopFunc"),
+    \ 'signs_visible': v:false,
     \ }
 
 function! s:project.is_building() dict
@@ -288,7 +289,7 @@ function! s:project.open_coverage_win(clean) dict
         \ 'buffer_nr': self.coverage_buffer,
         \ 'filetype': 'dcoverage',
         \ 'position': 'belowright',
-        \ 'size': '20',
+        \ 'size': '30',
         \ 'relative_to': self.build_buffer,
         \ 'alternative_name': 'Coverage Results',
         \ 'modifiers': 'signcolumn=no colorcolumn=""'
@@ -495,9 +496,14 @@ endfunction
 
 function! s:project.parse_clover() dict
   " Load clover file
-  let l:cloverfile = self.root_folder . '/build/reports/clover/clover.xml'
+  let l:cloverfile = self.root_folder . '/app/build/reports/clover/clover.xml'
+  echom "Looking for clover file in " . l:cloverfile
   if !filereadable(l:cloverfile)
-    throw 'Clover report for project ' . self.root_folder  . ' not found'
+    let l:cloverfile = self.root_folder . '/build/reports/clover/clover.xml'
+    echom "Looking for clover file in " . l:cloverfile
+    if !filereadable(l:cloverfile)
+      throw 'Clover report for project not found'
+    endif
   endif
   let l:cloverlines = readfile(l:cloverfile,)
   " loop over lines in file and extract coverage info
@@ -534,13 +540,13 @@ function! s:project.parse_clover() dict
         let l:currline = get(l:cloverlines, l:currlineidx)
         " get file metrics info
         if !empty(matchstr(l:currline, "<metrics")) && !l:metrics_set
-          let l:metrics_set = v:false
           call l:currfilecov.extract_file_metrics(l:currline)
           " update totals
           let self.coverage_data.covered_stmt += l:currfilecov.coveredstatements
           let self.coverage_data.covered_branch += l:currfilecov.coveredconditionals
           let self.coverage_data.all_stmt += l:currfilecov.statements
           let self.coverage_data.all_branch += l:currfilecov.conditionals
+          let l:metrics_set = v:true
         endif
         " get line info
         if !empty(matchstr(l:currline, "<line"))
@@ -554,14 +560,17 @@ function! s:project.parse_clover() dict
   endwhile
   let self.coverage_data.covered_total = self.coverage_data.covered_stmt +
         \ self.coverage_data.covered_branch
+  echom self.coverage_data.covered_total
   let self.coverage_data.all_total = self.coverage_data.all_stmt +
         \ self.coverage_data.all_branch
+  echom self.coverage_data.all_total
   if self.coverage_data.all_total > 0.0
     let self.coverage_data.covered_percent =
       \ (100.0 * self.coverage_data.covered_total) / self.coverage_data.all_total
   else
     let self.coverage_data.covered_percent = 100.0
   endif
+  echom self.coverage_data.covered_percent
 endfunction
 " }}}
 " Code signs {{{
@@ -569,8 +578,8 @@ hi! def dcoverageCoveredStmtColor       ctermbg=White ctermbg=Green  guifg=#FFFF
 hi! def dcoverageUncoveredStmtColor     ctermbg=White ctermbg=Red    guifg=#FFFFFF guibg=#870000
 hi! def dcoveragePartCoveredBranchColor ctermbg=White ctermbg=Yellow guifg=#FFFFFF guibg=#878700
 
-function! s:project.define_signs() dict
-  if self.signs_visible
+function! s:define_signs(signs_visible) abort
+  if a:signs_visible
     call sign_define([
           \ { "name":   "DcoverageCoveredStmt",
             \ "linehl": "dcoverageCoveredStmtColor",
@@ -626,6 +635,9 @@ let s:sign_group_name = 'DcoverageSignGroup'
 
 function! s:project.placeSigns() dict
   if exists("self.coverage_data")
+    if !exists("DcoverageCoveredStmt")
+      call s:define_signs(self.signs_visible)
+    endif
     for [l:key, l:value] in items(self.coverage_data)
       " Remove the values not associated with a file
       if type(l:value) != type({}) | continue | endif
@@ -657,12 +669,12 @@ endfunction
 
 function! s:project.show_signs() dict
   let self.signs_visible = v:true
-  call self.define_signs()
+  call s:define_signs(self.signs_visible)
 endfunction
 
 function! s:project.hide_signs() dict
   let self.signs_visible = v:false
-  call self.define_signs()
+  call s:define_signs(self.signs_visible)
 endfunction
 
 function! s:project.toggle_signs() dict
@@ -674,15 +686,16 @@ function! s:project.toggle_signs() dict
 endfunction
 " }}}
 " Write coverage summary {{{
+function! s:Float2Str(val)
+  return printf('%.0f', floor(a:val))
+endfunction
 function! s:project.calc_columnwidth(valuekey, initval=0) dict
-  " let l:ignore_keys = [ 'covered_stmt', 'covered_branch', 'covered_total',
-  "       \ 'covered_percent', 'all_stmt', 'all_branch', 'all_total']
   let l:max_len = a:initval
   for [l:key, l:value] in items(self.coverage_data)
     if type(l:value) != type({}) | continue | endif
     let l:val = l:value[a:valuekey]
     if type(l:val) == type(0.0)
-      let l:val = printf('%.0f', l:val)
+      let l:val = s:Float2Str(l:val)
     endif
     if len(l:val) > l:max_len
       let l:max_len = len(l:val)
@@ -705,7 +718,7 @@ function! s:gen_line(values, column_widths) abort
   while l:idx < len(a:column_widths)
     let l:val = get(a:values, l:idx)
     if type(l:val) == type(0.0)
-      let l:val = printf('%.0f', l:val)
+      let l:val = s:Float2Str(l:val)
     endif
     let l:vlen = len(l:val)
     let l:cw = get(a:column_widths, l:idx)
