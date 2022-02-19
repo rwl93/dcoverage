@@ -16,7 +16,8 @@ CONTENTS                                                    *DcoverageContents*
   8. License ................. |DcoverageLicense|
 
 ===============================================================================
-                                                               *DcoverageUsage*
+USAGE                                                          *DcoverageUsage*
+
 When a buffer is opened, |Dcoverage| searches the current path for a
 build.gradle file. If a build.gradle file is found |Dcoverage| provides
 commands to generate the Clover test coverage results, parse the Clover .xml
@@ -24,8 +25,8 @@ file, create a summary and provide code highlighting to show the statements and
 conditionals that are covered by the test suite.
 
 ===============================================================================
-                                                            *DcoverageCommands*
-Commands:
+COMMANDS                                                    *DcoverageCommands*
+
                                                       *:DcovGenAndShowCoverage*
 :DcovGenAndShowCoverage
   Runs `gradle clean cloverGenerateReport`, parses the Clover .xml file, opens
@@ -64,7 +65,8 @@ Commands:
   Toggles the |Dcoverage| code coverage highlighting.
 
 ===============================================================================
-                                                            *DcoverageMappings*
+MAPPINGS                                                    *DcoverageMappings*
+
 |Dcoverage| provides the following the <buffer> mappings for all files in a
 Gradle repository. Each of the mappings can be customized in your |vimrc| with
 by using the provided |<Plug>| mappings.
@@ -97,31 +99,35 @@ Normal mode maps:
 
 
 ===============================================================================
-                                                             *DcoverageSummary*
+SUMMARY_FILE                                                 *DcoverageSummary*
+
 DcoverageSummary:
   The Clover report is summarized for each file by providing the overall
   coverage percentage, the number of covered statements, the total number of
   statements and the number of covered and total conditionals.
 
 ===============================================================================
-                                                                *DcoverageBugs*
+BUGS                                                            *DcoverageBugs*
 
 ===============================================================================
-                                                        *DcoverageContributing*
+CONTRIBUTING                                            *DcoverageContributing*
+
 Users are encouraged to contribute by submitting issues and pull requests to
 https://github.com/rwl93/dcoverage.
 
 ===============================================================================
-                                                           *DcoverageChangelog*
+CHANGELOG                                                  *DcoverageChangelog*
 
 ===============================================================================
-                                                             *DcoverageCredits*
+CREDITS                                                      *DcoverageCredits*
+
 1. Prof. Hilton's Elisp Dcoverage code
 2. The Gradle wrapper is largely based off of |vim-gradle| at
    https://github.com/hdiniz/vim-gradle
 
 ===============================================================================
-                                                             *DcoverageLicense*
+LICENSE                                                      *DcoverageLicense*
+
 MIT License
 
 Copyright (c) 2022 Randolph Linderman
