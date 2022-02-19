@@ -1,8 +1,143 @@
-*dcoverage.txt* Plugin for generating and reading clover reports
+*Dcoverage.txt* Plugin for generating and reading clover reports
 
 Generates and displays vital clover coverage information extracted from clover
 xml output.
 
-                                                       *dcoverage-requirements*
-Requirements:
-  |dcoverage| utilizes ...
+===============================================================================
+CONTENTS                                                    *DcoverageContents*
+  1. Usage ................... |DcoverageUsage|
+  2. Commands ................ |DcoverageCommands|
+  3. Mappings ................ |DcoverageMappings|
+  3. Summary ................. |DcoverageSummary|
+  4. Bugs .................... |DcoverageBugs|
+  5. Contributing ............ |DcoverageContributing|
+  6. Changelog ............... |DcoverageChangelog|
+  7. Credits ................. |DcoverageCredits|
+  8. License ................. |DcoverageLicense|
+
+===============================================================================
+                                                               *DcoverageUsage*
+When a buffer is opened, |Dcoverage| searches the current path for a
+build.gradle file. If a build.gradle file is found |Dcoverage| provides
+commands to generate the Clover test coverage results, parse the Clover .xml
+file, create a summary and provide code highlighting to show the statements and
+conditionals that are covered by the test suite.
+
+===============================================================================
+                                                            *DcoverageCommands*
+Commands:
+                                                      *:DcovGenAndShowCoverage*
+:DcovGenAndShowCoverage
+  Runs `gradle clean cloverGenerateReport`, parses the Clover .xml file, opens
+  a new buffer with the summary of the code coverage and sets signs to
+  highlight covered, partially covered, and uncovered statements and
+  conditionals. |Dcoverage| searches for the clover file in
+  'build/reports/clover/clover.xml' and 'app/build/reports/clover/clover.xml'.
+
+  NOTE: If `gradle build` fails due to failing test cases or due to any other
+        reason the clover .xml file will not be generated and the command will
+        fail.
+
+  NOTE: A syntax for the |DcoverageSummary| is provided to highlight the lines
+        that are poorly, moderate and well covered files.
+
+                                                      *:DcovGenAndSaveCoverage*
+:DcovGenAndSaveCoverage {filename}
+  See |:DcovGenAndShowCoverage|. This command also saves the |DcoverageSummary|
+  to {gradle-root}/dcoverage.txt or to {gradle-root}/{filename} if the
+  {filename} argument is provided.
+
+                                                         *:DcovGenCloverReport*
+:DcovGenCloverReport
+  Runs `gradle clean cloverGenerateReport`.
+
+                                                         *:DcovToggleOutputWin*
+:DcovToggleOutputWin
+  Toggles the Gradle output window.
+
+                                                       *:DcovToggleCoverageWin*
+:DcovToggleCoverageWin
+  Toggles the |Dcoverage| summary window.
+
+                                                             *:DcovToggleSigns*
+:DcovToggleSigns
+  Toggles the |Dcoverage| code coverage highlighting.
+
+===============================================================================
+                                                            *DcoverageMappings*
+|Dcoverage| provides the following the <buffer> mappings for all files in a
+Gradle repository. Each of the mappings can be customized in your |vimrc| with
+by using the provided |<Plug>| mappings.
+
+Normal mode maps:
+                                                 *<Plug>DcovGenAndShowCoverage*
+<Plug>DcovGenAndShowCoverage runs |:DcovGenAndShowCoverage|
+
+                                                         *Dcoverage_<Leader>dg*
+                                                 *<Plug>DcovGenAndSaveCoverage*
+<Leader>dg is mapped to <Plug>DcovGenAndSaveCoverage which runs
+|:DcovGenAndSaveCoverage| with no {filename} argument
+
+                                                    *<Plug>DcovGenCloverReport*
+<Plug>DcovGenCloverReport runs |:DcovGenCloverReport|
+
+                                                         *Dcoverage_<Leader>do*
+                                                    *<Plug>DcovToggleOutputWin*
+<Leader>do is mapped to <Plug>DcovToggleOutputWin which runs
+|:DcovToggleOutputWin|
+
+                                                         *Dcoverage_<Leader>dc*
+                                                  *<Plug>DcovToggleCoverageWin*
+<Leader>dc is mapped to <Plug>DcovToggleCoverageWin which runs
+|:DcovToggleCoverageWin|
+
+                                                         *Dcoverage_<Leader>ds*
+                                                        *<Plug>DcovToggleSigns*
+<Leader>ds is mapped to <Plug>DcovToggleSigns which runs |:DcovToggleSigns|
+
+
+===============================================================================
+                                                             *DcoverageSummary*
+DcoverageSummary:
+  The Clover report is summarized for each file by providing the overall
+  coverage percentage, the number of covered statements, the total number of
+  statements and the number of covered and total conditionals.
+
+===============================================================================
+                                                                *DcoverageBugs*
+
+===============================================================================
+                                                        *DcoverageContributing*
+Users are encouraged to contribute by submitting issues and pull requests to
+https://github.com/rwl93/dcoverage.
+
+===============================================================================
+                                                           *DcoverageChangelog*
+
+===============================================================================
+                                                             *DcoverageCredits*
+1. Prof. Hilton's Elisp Dcoverage code
+2. The Gradle wrapper is largely based off of |vim-gradle| at
+   https://github.com/hdiniz/vim-gradle
+
+===============================================================================
+                                                            *DcoverageLicense*
+Copyright 2022 Randolph Linderman
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+of the Software, and to permit persons to whom the Software is furnished to do
+so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
