@@ -1,4 +1,4 @@
-*Dcoverage.txt* Plugin for generating and reading clover reports
+*dcoverage.txt* Plugin for generating and reading clover reports
 
 Generates and displays vital clover coverage information extracted from clover
 xml output.
